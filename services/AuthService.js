@@ -1,6 +1,6 @@
 const { User, Role } = require('../models');
 const { Op } = require('sequelize');
-const admin = require('../config/firebase');
+const admin = require('../config/firebaseConfig');
 
 class AuthService {
   // Find user by email with role

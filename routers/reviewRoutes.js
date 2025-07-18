@@ -7,12 +7,12 @@ router.post('/', controller.createReview);
 
 
 // GET a single car brand by ID
-router.get('/:id', controller.getReviewsById);
+router.get('/:id', controller.getReviewById);
 
 
 // PUT update a car brand
-router.put('/:id', controller.updateReviews);
+router.put('/:id', controller.updateReview);
 
 // DELETE a car brand
-router.delete('/:id', controller.deleteReviews);
+router.delete('/:id', controller.deleteReview);
 module.exports = router;

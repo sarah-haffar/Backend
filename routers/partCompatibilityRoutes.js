@@ -7,13 +7,13 @@ router.post('/', controller.createPartCompatibility);
 
 
 // GET a single car brand by ID
-router.get('/:id', controller.getPartCompatibilitiesById);
+router.get('/:id', controller.getPartCompatibilitieById);
 
 
 // PUT update a car brand
-router.put('/:id', controller.updatePartCompatibilities);
+router.put('/:id', controller.updatePartCompatibilitie);
 
 // DELETE a car brand
-router.delete('/:id', controller.deletePartCompatibilities);
+router.delete('/:id', controller.deletePartCompatibilitie);
 
 module.exports = router;

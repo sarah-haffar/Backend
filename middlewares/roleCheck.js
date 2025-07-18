@@ -6,3 +6,10 @@ module.exports = function requireRole(...allowedRoles) {
         next();
     };
 };
+const requireRole = require("../middlewares/requireRole");
+
+// Only superAdmin can access
+router.delete("/:id", requireRole("superAdmin"), controller.deleteUser);
+
+// Admin or the same user can update user info
+router.put("/:id", requireRole("admin", "superAdmin"), controller.updateUser);

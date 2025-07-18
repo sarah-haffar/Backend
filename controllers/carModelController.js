@@ -1,4 +1,6 @@
 // controllers/carModelController.js
+const db = require('../models');  // Import the db object (adjust path if needed)
+
 const CarModel = db.CarModel;
 
 exports.getAllCarModels = async (req, res) => {

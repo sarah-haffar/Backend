@@ -59,6 +59,35 @@ exports.updateShop = async (req, res) => {
   }
 };
 
+exports.register = async (req, res) => {
+  const { email, password, first_name, last_name } = req.body;
+
+  try {
+    const existingUser = await AuthService.findUserByEmail(email);
+
+    if (existingUser) {
+      return res.status(400).json({ error: "Email is already in use" });
+    }
+
+    const newUser = await AuthService.createUser({
+      email,
+      password,
+      first_name,
+      last_name,
+      role_id: 2, // default user role
+    });
+
+    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.status(201).json({
+      token,
+      user: AuthService.formatUserResponse(newUser),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.deleteShop = async (req, res) => {
   try {
     const shop = await Shop.findByPk(req.params.id);

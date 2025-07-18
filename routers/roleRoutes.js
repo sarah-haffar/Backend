@@ -6,12 +6,12 @@ router.get('/', controller.getAllRoles);
 router.post('/', controller.createRole);
 
 // GET a single car brand by ID
-router.get('/:id', controller.getRolesById);
+router.get('/:id', controller.getRoleById);
 
 
 // PUT update a car brand
-router.put('/:id', controller.updateRoles);
+router.put('/:id', controller.updateRole);
 
 // DELETE a car brand
-router.delete('/:id', controller.deleteRoles);
+router.delete('/:id', controller.deleteRole);
 module.exports = router;

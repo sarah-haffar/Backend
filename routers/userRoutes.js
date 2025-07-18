@@ -6,13 +6,13 @@ router.get('/', controller.getAllUsers);
 
 router.post('/', controller.createUser);
 
-// // GET a single car brand by ID
-// router.get('/:id', controller.getUsersById);
+// GET a single car brand by ID
+router.get('/:id', controller.getUserById);
 
 
-// // PUT update a car brand
-// router.put('/:id', controller.updateUsers);
+// PUT update a car brand
+router.put('/:id', controller.updateUser);
 
-// // DELETE a car brand
-// router.delete('/:id', controller.deleteUsers);
+// DELETE a car brand
+router.delete('/:id', controller.deleteUser);
 module.exports = router;
