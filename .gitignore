@@ -1,7 +1,7 @@
 # Ignorer node_modules
 node_modules/
 
-# Ignorer les fichiers secrets Firebase
+# Firebase service account (très important)
 config/firebase-service-account.json
 
 # Ignorer les fichiers logs
