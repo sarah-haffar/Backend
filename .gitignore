@@ -1,0 +1,11 @@
+# Ignorer node_modules
+node_modules/
+
+# Ignorer les fichiers secrets Firebase
+firebase-service.json
+
+# Ignorer les fichiers logs
+*.log
+
+# Ignorer les fichiers d’environnement
+.env
