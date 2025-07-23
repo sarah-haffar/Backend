@@ -77,13 +77,14 @@ class AuthService {
   }
 
   // Format user response
+  // Format user response
   formatUserResponse(user, picture = null) {
     return {
       id: user.id,
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
-      full_name: user.getFullName(),
+      full_name: `${user.first_name} ${user.last_name}`, // <-- corrigé ici
       phone: user.phone,
       address: user.address,
       city: user.city,
