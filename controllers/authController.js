@@ -1,5 +1,5 @@
-
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const AuthService = require("../services/AuthService");
 
 exports.login = async (req, res) => {
@@ -26,7 +26,6 @@ exports.login = async (req, res) => {
   }
 };
 
-
 exports.register = async (req, res) => {
   const { email, password, first_name, last_name } = req.body;
 
@@ -37,31 +36,32 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: "Email is already in use" });
     }
 
+    // ✅ Hasher le mot de passe avant de le sauvegarder
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await AuthService.createUser({
       email,
-      password_hash: password,
+      password_hash: hashedPassword,
       first_name,
       last_name,
-      role_id: 2, // default user role
+      role_id: 2 // rôle par défaut
     });
 
     const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.status(201).json({
       token,
-      user: AuthService.formatUserResponse(newUser),
+      user: AuthService.formatUserResponse(newUser)
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
 exports.googleLogin = async (req, res) => {
   const { token } = req.body;
 
   try {
-    // Verify the Firebase token
     const decodedToken = await AuthService.verifyFirebaseToken(token);
 
     const { uid, email, name, picture } = decodedToken;
@@ -75,7 +75,7 @@ exports.googleLogin = async (req, res) => {
         email_verified: true,
         first_name: name?.split(" ")[0],
         last_name: name?.split(" ")[1] || '',
-        role_id: 2 // default role ID for normal users
+        role_id: 2
       });
     }
 

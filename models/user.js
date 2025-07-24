@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define("User", {
         id: {
@@ -43,6 +45,11 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true
     });
 
+    // ✅ Méthode pour comparer le mot de passe (à utiliser dans le login)
+    User.prototype.comparePassword = async function (password) {
+        return bcrypt.compare(password, this.password_hash);
+    };
+
     User.associate = (models) => {
         User.belongsTo(models.Role, {
             foreignKey: 'role_id',
@@ -50,19 +57,12 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE'
         });
 
-        // Relations supplémentaires basées sur le ERD
         User.hasMany(models.Order, { foreignKey: 'user_id', as: 'orders' });
         User.hasMany(models.Cart, { foreignKey: 'user_id', as: 'cart' });
-       /**  User.hasMany(models.Wishlist, { foreignKey: 'user_id', as: 'wishlist' });*/
         User.hasMany(models.Review, { foreignKey: 'user_id', as: 'reviews' });
-        /**User.hasOne(models.UserProfile, { foreignKey: 'user_id', as: 'profile' });
-        User.hasMany(models.ProductView, { foreignKey: 'user_id', as: 'views' });
-        User.hasMany(models.SearchHistory, { foreignKey: 'user_id', as: 'searches' });
-        User.hasMany(models.UserInteraction, { foreignKey: 'user_id', as: 'interactions' });*/
         User.hasMany(models.Recommendation, { foreignKey: 'user_id', as: 'recommendations' });
         User.hasMany(models.Shop, { foreignKey: 'owner_id', as: 'shops' });
     };
 
     return User;
 };
-// This code defines the User model for a Sequelize ORM setup, including its attributes, associations, and configurations.
