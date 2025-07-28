@@ -5,9 +5,9 @@ module.exports = async function isAuthenticated(req, res, next) {
     const authHeader = req.headers.authorization;
 
 
-    console.log("Authorization Header:", req.headers.authorization);    
-    console.log("JWT_SECRET:", process.env.JWT_SECRET); 
-    
+    console.log("Authorization Header:", req.headers.authorization);
+    console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ error: "Token manquant ou invalide" });
     }
@@ -29,17 +29,18 @@ module.exports = async function isAuthenticated(req, res, next) {
 
         // Injecter dans req.user uniquement les infos utiles
         req.user = {
-            id: user.id,
-            role_id: user.role_id,
-            role_name: user.role.name,
-            email: user.email
+            id: decoded.id,
+            email: decoded.email,
+            first_name: decoded.first_name,
+            role_id: decoded.role_id
         };
 
+
         next();
-   
+
     } catch (error) {
         return res.status(401).json({ error: "Token invalide ou expiré" });
-       
+
 
     }
 };

@@ -11,7 +11,14 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Email or password is incorrect" });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const payload = {
+      id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      role_id: user.role_id
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     await AuthService.updateLastLogin(user.id);
 
@@ -31,7 +38,6 @@ exports.register = async (req, res) => {
 
   try {
     const existingUser = await AuthService.findUserByEmail(email);
-
     if (existingUser) {
       return res.status(400).json({ error: "Email is already in use" });
     }
@@ -41,28 +47,33 @@ exports.register = async (req, res) => {
       password_hash: password,
       first_name,
       last_name,
-      role_id: 2, // default user role
+      role_id: 2,
     });
 
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const payload = {
+      id: newUser.id,
+      email: newUser.email,
+      first_name: newUser.first_name,
+      role_id: newUser.role_id
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.status(201).json({
       token,
-      user: AuthService.formatUserResponse(newUser),
+      user: AuthService.formatUserResponse(newUser)
     });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
 exports.googleLogin = async (req, res) => {
   const { token } = req.body;
 
   try {
-    // Verify the Firebase token
     const decodedToken = await AuthService.verifyFirebaseToken(token);
-
     const { uid, email, name, picture } = decodedToken;
 
     let user = await AuthService.findUserByGoogleIdOrEmail(uid, email);
@@ -74,11 +85,18 @@ exports.googleLogin = async (req, res) => {
         email_verified: true,
         first_name: name?.split(" ")[0],
         last_name: name?.split(" ")[1] || '',
-        role_id: 2 // default role ID for normal users
+        role_id: 2
       });
     }
 
-    const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const payload = {
+      id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      role_id: user.role_id
+    };
+
+    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     await AuthService.updateLastLogin(user.id);
 
@@ -91,3 +109,4 @@ exports.googleLogin = async (req, res) => {
     res.status(401).json({ error: "Invalid Firebase token" });
   }
 };
+
