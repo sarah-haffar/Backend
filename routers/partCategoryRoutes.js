@@ -1,34 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/partCategoryController');
+const controller = require('../controllers/orderController');
 
 /**
  * @swagger
  * tags:
- *   name: PartCategories
- *   description: Part category management and operations
+ *   name: Orders
+ *   description: Order management and operations
  */
 
 /**
  * @swagger
- * /api/partCategory:
+ * /api/orders:
  *   get:
- *     summary: Get all part categories
- *     tags: [PartCategories]
+ *     summary: Get all orders
+ *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of part categories
+ *         description: List of orders
  */
-router.get('/', controller.getAllCategories);
+router.get('/', controller.getAllOrders);
 
 /**
  * @swagger
- * /api/partCategory:
+ * /api/orders:
  *   post:
- *     summary: Create a new part category
- *     tags: [PartCategories]
+ *     summary: Create a new order
+ *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -38,54 +38,62 @@ router.get('/', controller.getAllCategories);
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - userId
+ *               - items
  *             properties:
- *               name:
+ *               userId:
  *                 type: string
- *               description:
- *                 type: string
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productId:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
  *     responses:
  *       201:
- *         description: Part category created successfully
+ *         description: Order created successfully
  */
-router.post('/', controller.createCategory);
+router.post('/', controller.createOrder);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/orders/{id}:
  *   get:
- *     summary: Get part category by ID
- *     tags: [PartCategories]
+ *     summary: Get order by ID
+ *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part category ID
+ *         description: Order ID
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Part category object
+ *         description: Order object
  *       404:
- *         description: Part category not found
+ *         description: Order not found
  */
-router.get('/:id', controller.getCategoryById);
+router.get('/:id', controller.getOrderById);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/orders/{id}:
  *   put:
- *     summary: Update a part category by ID
- *     tags: [PartCategories]
+ *     summary: Update an order by ID
+ *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part category ID
+ *         description: Order ID
  *         schema:
  *           type: string
  *     requestBody:
@@ -95,39 +103,46 @@ router.get('/:id', controller.getCategoryById);
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               status:
  *                 type: string
- *               description:
- *                 type: string
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productId:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
  *     responses:
  *       200:
- *         description: Part category updated successfully
+ *         description: Order updated successfully
  *       404:
- *         description: Part category not found
+ *         description: Order not found
  */
-router.put('/:id', controller.updateCategory);
+router.put('/:id', controller.updateOrder);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/orders/{id}:
  *   delete:
- *     summary: Delete a part category by ID
- *     tags: [PartCategories]
+ *     summary: Delete an order by ID
+ *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part category ID
+ *         description: Order ID
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Part category deleted successfully
+ *         description: Order deleted successfully
  *       404:
- *         description: Part category not found
+ *         description: Order not found
  */
-router.delete('/:id', controller.deleteCategory);
+router.delete('/:id', controller.deleteOrder);
 
 module.exports = router;

@@ -39,6 +39,10 @@ router.get('/', controller.getAllUsers);
  *               - email
  *               - password
  *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
  *               email:
  *                 type: string
  *                 format: email

@@ -4,6 +4,10 @@ const db = require("../models");
 module.exports = async function isAuthenticated(req, res, next) {
     const authHeader = req.headers.authorization;
 
+
+    console.log("Authorization Header:", req.headers.authorization);    
+    console.log("JWT_SECRET:", process.env.JWT_SECRET); 
+    
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ error: "Token manquant ou invalide" });
     }
@@ -32,8 +36,10 @@ module.exports = async function isAuthenticated(req, res, next) {
         };
 
         next();
-
+   
     } catch (error) {
         return res.status(401).json({ error: "Token invalide ou expiré" });
+       
+
     }
 };
