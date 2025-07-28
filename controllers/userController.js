@@ -10,7 +10,8 @@ exports.getAllUsers = async (req, res) => {
         { association: 'cart' },
         { association: 'reviews' },
         { association: 'recommendations' },
-        { association: 'shops' }
+        { association: 'shops' },
+        { association: 'cars' }
       ],
       order: [['created_at', 'DESC']]
     });
@@ -29,7 +30,8 @@ exports.getUserById = async (req, res) => {
         { association: 'cart' },
         { association: 'reviews' },
         { association: 'recommendations' },
-        { association: 'shops' }
+        { association: 'shops' },
+        { association: 'cars' }
       ]
     });
     if (!user) return res.status(404).json({ message: 'User not found' });

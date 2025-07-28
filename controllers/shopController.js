@@ -77,16 +77,27 @@ exports.register = async (req, res) => {
       role_id: 2, // default user role
     });
 
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    // Fetch role name if needed - assuming you have a function or association
+    const userWithRole = await AuthService.findUserById(newUser.id, { includeRole: true });
+
+    const payload = {
+      id: userWithRole.id,
+      first_name: userWithRole.first_name,
+      email: userWithRole.email,
+      role: userWithRole.role ? userWithRole.role.name : null
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "40s" });
 
     res.status(201).json({
       token,
-      user: AuthService.formatUserResponse(newUser),
+      user: AuthService.formatUserResponse(userWithRole),
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.deleteShop = async (req, res) => {
   try {

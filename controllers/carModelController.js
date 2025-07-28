@@ -1,11 +1,12 @@
 // controllers/carModelController.js
-const db = require('../models');  // Import the db object (adjust path if needed)
-
+const db = require('../models');
 const CarModel = db.CarModel;
 
 exports.getAllCarModels = async (req, res) => {
   try {
-    const models = await CarModel.findAll();
+    const models = await CarModel.findAll({
+      include: ['brand', 'engines']
+    });
     res.json(models);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -14,14 +15,16 @@ exports.getAllCarModels = async (req, res) => {
 
 exports.getCarModelById = async (req, res) => {
   try {
-    const model = await CarModel.findByPk(req.params.id);
-    if (!model) return res.status(404).json({ message: 'Brand not found' });
+    const model = await CarModel.findByPk(req.params.id, {
+      include: ['brand', 'engines']
+    });
+
+    if (!model) return res.status(404).json({ message: 'Model not found' });
     res.json(model);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 exports.createCarModel = async (req, res) => {
   try {
@@ -32,12 +35,10 @@ exports.createCarModel = async (req, res) => {
   }
 };
 
-
-
 exports.updateCarModel = async (req, res) => {
   try {
     const model = await CarModel.findByPk(req.params.id);
-    if (!model) return res.status(404).json({ message: 'Brand not found' });
+    if (!model) return res.status(404).json({ message: 'Model not found' });
 
     await model.update(req.body);
     res.json(model);
@@ -49,10 +50,10 @@ exports.updateCarModel = async (req, res) => {
 exports.deleteCarModel = async (req, res) => {
   try {
     const model = await CarModel.findByPk(req.params.id);
-    if (!model) return res.status(404).json({ message: 'Brand not found' });
+    if (!model) return res.status(404).json({ message: 'Model not found' });
 
-    await brand.destroy();
-    res.json({ message: 'Brand deleted' });
+    await model.destroy(); // ✅ FIX: was `brand.destroy()`
+    res.json({ message: 'Model deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

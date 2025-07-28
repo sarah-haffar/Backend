@@ -116,16 +116,16 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Instance methods
-  User.prototype.comparePassword = async function(password) {
+  User.prototype.comparePassword = async function (password) {
     if (!this.password_hash) return false;
     return await bcrypt.compare(password, this.password_hash);
   };
 
-  User.prototype.getFullName = function() {
+  User.prototype.getFullName = function () {
     return `${this.first_name || ''} ${this.last_name || ''}`.trim();
   };
 
-  User.prototype.toJSON = function() {
+  User.prototype.toJSON = function () {
     const values = Object.assign({}, this.get());
     delete values.password_hash;
     return values;
@@ -137,7 +137,10 @@ module.exports = (sequelize, DataTypes) => {
       as: 'role',
       onDelete: 'CASCADE'
     });
-
+    User.hasMany(models.Car, {
+      foreignKey: 'userId',
+      as: 'cars'
+    });
     // Your existing associations
     User.hasMany(models.Order, { foreignKey: 'user_id', as: 'orders' });
     User.hasMany(models.Cart, { foreignKey: 'user_id', as: 'cart' });

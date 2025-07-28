@@ -63,6 +63,11 @@ module.exports = (sequelize, DataTypes) => {
             as: 'compatibilities',
             onDelete: 'CASCADE'
         });
+        Engine.hasMany(models.Car, { // 👈 Add this
+            foreignKey: 'engineId',
+            as: 'cars',
+            onDelete: 'SET NULL'
+        });
     };
 
     return Engine;

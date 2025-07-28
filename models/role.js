@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     permissions: {
       type: DataTypes.JSON,
-      allowNull: true,
-      defaultValue: []
+      allowNull: false,
+      defaultValue: []  // ensure default empty array (you already did this)
     },
     is_active: {
       type: DataTypes.BOOLEAN,

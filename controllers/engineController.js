@@ -1,24 +1,43 @@
 // controllers/engineController.js
 const db = require('../models');
 const Engine = db.Engine;
-
-// Récupérer tous les moteurs
 exports.getAllEngines = async (req, res) => {
   try {
-    const engines = await Engine.findAll();
+    const engines = await Engine.findAll({
+      include: [
+        {
+          association: 'car_model',
+          include: ['brand'] // optional: if you want the brand as well
+        },
+        {
+          association: 'cars' // if defined: Engine.hasMany(Car, { as: 'cars' })
+        }
+      ]
+    });
     res.json(engines);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Récupérer un moteur par ID
 exports.getEngineById = async (req, res) => {
   try {
-    const engine = await Engine.findByPk(req.params.id);
+    const engine = await Engine.findByPk(req.params.id, {
+      include: [
+        {
+          association: 'car_model',
+          include: ['brand']
+        },
+        {
+          association: 'cars'
+        }
+      ]
+    });
+
     if (!engine) {
       return res.status(404).json({ error: 'Moteur non trouvé' });
     }
+
     res.json(engine);
   } catch (error) {
     res.status(500).json({ error: error.message });
