@@ -1,50 +1,3 @@
-// ===============================
-// MODELS LAYER
-// ===============================
-
-// models/Role.js
-module.exports = (sequelize, DataTypes) => {
-  const Role = sequelize.define("Role", {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    permissions: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      defaultValue: []
-    },
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    }
-  }, {
-    tableName: 'roles',
-    timestamps: true,
-    underscored: true
-  });
-
-  Role.associate = (models) => {
-    Role.hasMany(models.User, {
-      foreignKey: 'role_id',
-      as: 'users'
-    });
-  };
-
-  return Role;
-};
-
-// models/User.js (Enhanced version of your existing model)
 const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize, DataTypes) => {
@@ -57,11 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
     },
     password_hash: {
       type: DataTypes.STRING,
-      allowNull: true // Allow null for Google users
+      allowNull: true
     },
     role_id: {
       type: DataTypes.INTEGER,
@@ -71,13 +23,34 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    first_name: DataTypes.STRING,
-    last_name: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    address: DataTypes.TEXT,
-    city: DataTypes.STRING,
-    postal_code: DataTypes.STRING,
-    country: DataTypes.STRING,
+    first_name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    postal_code: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
@@ -88,8 +61,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     google_id: {
       type: DataTypes.STRING,
-      allowNull: true,
-      unique: true
+      allowNull: true
     },
     last_login: {
       type: DataTypes.DATE,
@@ -99,6 +71,18 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'users',
     timestamps: true,
     underscored: true,
+    // REDUCED INDEXES - Only keep essential ones
+    indexes: [
+      {
+        fields: ['email']
+      },
+      {
+        fields: ['role_id']
+      },
+      {
+        fields: ['google_id']
+      }
+    ],
     hooks: {
       beforeCreate: async (user) => {
         if (user.password_hash) {
@@ -134,19 +118,65 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.belongsTo(models.Role, {
       foreignKey: 'role_id',
-      as: 'role',
-      onDelete: 'CASCADE'
+      as: 'role'
     });
+    
     User.hasMany(models.Car, {
       foreignKey: 'userId',
       as: 'cars'
     });
-    // Your existing associations
-    User.hasMany(models.Order, { foreignKey: 'user_id', as: 'orders' });
-    User.hasMany(models.Cart, { foreignKey: 'user_id', as: 'cart' });
-    User.hasMany(models.Review, { foreignKey: 'user_id', as: 'reviews' });
-    User.hasMany(models.Recommendation, { foreignKey: 'user_id', as: 'recommendations' });
-    User.hasMany(models.Shop, { foreignKey: 'owner_id', as: 'shops' });
+    
+    User.hasMany(models.Order, { 
+      foreignKey: 'user_id', 
+      as: 'orders' 
+    });
+    
+    User.hasMany(models.Cart, { 
+      foreignKey: 'user_id', 
+      as: 'cart' 
+    });
+    
+    User.hasMany(models.Review, { 
+      foreignKey: 'user_id', 
+      as: 'reviews' 
+    });
+    
+    User.hasMany(models.Recommendation, { 
+      foreignKey: 'user_id', 
+      as: 'recommendations' 
+    });
+    
+    User.hasMany(models.Shop, { 
+      foreignKey: 'owner_id', 
+      as: 'shops' 
+    });
+
+    User.hasMany(models.MaintenanceHistory, {
+      foreignKey: 'user_id',
+      as: 'maintenance_records'
+    });
+
+    // Recommendation system associations
+    if (models.UserBehavior) {
+      User.hasMany(models.UserBehavior, { 
+        foreignKey: 'user_id', 
+        as: 'behaviors' 
+      });
+    }
+    
+    if (models.UserPreference) {
+      User.hasMany(models.UserPreference, { 
+        foreignKey: 'user_id', 
+        as: 'preferences' 
+      });
+    }
+    
+    if (models.RecommendationFeedback) {
+      User.hasMany(models.RecommendationFeedback, { 
+        foreignKey: 'user_id', 
+        as: 'recommendation_feedbacks' 
+      });
+    }
   };
 
   return User;

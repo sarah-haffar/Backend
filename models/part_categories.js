@@ -52,6 +52,12 @@ module.exports = (sequelize, DataTypes) => {
             as: 'parts',
             onDelete: 'CASCADE'
         });
+
+        // New association for recommendation system
+        PartCategory.hasMany(models.UserBehavior, {
+            foreignKey: 'category_id',
+            as: 'user_behaviors'
+        });
     };
 
     return PartCategory;

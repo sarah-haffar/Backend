@@ -22,6 +22,8 @@ const orderRoutes = require("./routers/orderRoutes");
 const partCategoryRoutes = require("./routers/partCategoryRoutes");
 const roleRoutes = require("./routers/roleRoutes");
 const shopRoutes = require("./routers/shopRoutes");
+const carBrand = require("./routers/carBrandRoutes");
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -46,6 +48,7 @@ app.use(isAuthenticated); // <-- middleware that checks JWT
 
 
 app.use("/api/cars", hasPermission("MANAGE_USERS"), carRouter);
+app.use("/api/carBrand", hasPermission("MANAGE_CAR_MODELS"), carModelRoutes);
 
 app.use("/api/users", hasPermission("MANAGE_USERS"), userRouter);
 app.use("/api/carModel", hasPermission("MANAGE_CAR_MODELS"), carModelRoutes);
