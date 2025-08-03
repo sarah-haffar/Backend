@@ -53,6 +53,19 @@ module.exports = {
         firebaseToken: { type: "string", example: "eyJhbGciOi..." }
     },
     required: ["firebaseToken"]
-    }
+    },
+
+    UpdateUserRoleInput : {
+      type: "object",
+      properties: {
+        roleId: {
+          type: "integer",
+          example: 2,
+          description: "ID du rôle à assigner à l'utilisateur"
+        }
+      },
+      required: ["roleId"]
+  }
+
 
 };

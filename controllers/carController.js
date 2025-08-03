@@ -7,7 +7,8 @@ exports.getAllCars = async (req, res) => {
   try {
     const cars = await Car.findAll({
       include: [
-        { model: User, as: 'owner', attributes: ['id', 'name', 'email'] }
+        { model: User, as: 'owner', attributes: ['id', 'first_name', 'last_name', 'email']
+ }
       ]
     });
     res.json(cars);
@@ -21,7 +22,8 @@ exports.getCarById = async (req, res) => {
   try {
     const car = await Car.findByPk(req.params.id, {
       include: [
-        { model: User, as: 'owner', attributes: ['id', 'name', 'email'] }
+        { model: User, as: 'owner', attributes: ['id', 'first_name', 'last_name', 'email']
+ }
       ]
     });
     if (!car) return res.status(404).json({ message: 'Car not found' });

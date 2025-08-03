@@ -14,11 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    permissions: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      defaultValue: []  // ensure default empty array (you already did this)
-    },
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
@@ -34,15 +29,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'role_id',
       as: 'users'
     });
-  };
-  Role.associate = (models) => {
-    Role.hasMany(models.User, {
+
+    Role.belongsToMany(models.Permission, {
+      through: 'role_permissions',
       foreignKey: 'role_id',
-      as: 'users'
+      otherKey: 'permission_id',
+      as: 'permissions'
     });
   };
 
   return Role;
-  return Role;
 };
-
