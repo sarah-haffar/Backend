@@ -4,6 +4,10 @@ const db = require("../models");
 module.exports = async function isAuthenticated(req, res, next) {
   const authHeader = req.headers.authorization;
 
+  // Log pour debug
+  console.log("Authorization Header:", req.headers.authorization);
+  console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Token manquant ou invalide" });
   }
@@ -13,7 +17,7 @@ module.exports = async function isAuthenticated(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ On inclut les permissions via le rôle
+    // On récupère l'utilisateur avec ses rôles et permissions
     const user = await db.User.findByPk(decoded.id, {
       include: [
         {
@@ -28,6 +32,7 @@ module.exports = async function isAuthenticated(req, res, next) {
       return res.status(401).json({ error: "Utilisateur introuvable" });
     }
 
+    // Injection dans req.user des infos utiles
     req.user = {
       id: user.id,
       role_id: user.role_id,

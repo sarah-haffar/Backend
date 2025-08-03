@@ -20,7 +20,6 @@
  *       200:
  *         description: OK
  */
-
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
@@ -32,11 +31,18 @@ router.get('/search/:model', async (req, res) => {
 
   if (!q) return res.status(400).json({ error: 'Missing search query (?q=)' });
 
-  if (!searchableModels[model]) {
+  const columns = searchableModels[model];
+
+  if (!columns) {
     return res.status(404).json({ error: `Model '${model}' is not searchable.` });
   }
 
-  const columns = searchableModels[model];
+  // Whitelist table names to prevent SQL injection
+  const allowedModels = Object.keys(searchableModels);
+  if (!allowedModels.includes(model)) {
+    return res.status(403).json({ error: 'Access denied to this model' });
+  }
+
   const whereClause = columns.map(col => `${col} LIKE :query`).join(' OR ');
 
   try {

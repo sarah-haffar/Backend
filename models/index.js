@@ -1,5 +1,4 @@
 'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -27,8 +26,23 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+    console.log(`Loading model file: ${file}`);
+    try {
+      const modelRequire = require(path.join(__dirname, file));
+      console.log(`Model require result type for ${file}:`, typeof modelRequire);
+      
+      if (typeof modelRequire !== 'function') {
+        console.error(`ERROR: ${file} does not export a function!`);
+        console.error(`It exports:`, modelRequire);
+        return; // Skip this file
+      }
+      
+      const model = modelRequire(sequelize, Sequelize.DataTypes);
+      console.log(`Successfully loaded model: ${model.name}`);
+      db[model.name] = model;
+    } catch (error) {
+      console.error(`Error loading model ${file}:`, error.message);
+    }
   });
 
 Object.keys(db).forEach(modelName => {

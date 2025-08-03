@@ -23,41 +23,38 @@ const orderRoutes = require("./routers/orderRoutes");
 const partCategoryRoutes = require("./routers/partCategoryRoutes");
 const roleRoutes = require("./routers/roleRoutes");
 const shopRoutes = require("./routers/shopRoutes");
+
 const roleAdminRoutes = require("./routers/admin/roleRoutes");
 const permissionAdminRoutes = require("./routers/admin/permissionRoutes");
 const userAdminRoutes = require('./routers/admin/userAdminRoutes');
 const adminUsersRouter = require("./routers/adminUsers");
 const adminStatsRoutes = require('./routers/admin/adminStatsRoutes');
 
-app.use('/api/admin', adminStatsRoutes);
-
-
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
+// Swagger UI setup
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-
+// Public routes
+app.use("/api/auth", authRouter);
 app.use('/api', searchRoute);
+
+// Admin routes
 app.use("/api/admin/roles", roleAdminRoutes);
 app.use("/api/admin/permissions", permissionAdminRoutes);
 app.use('/api/admin/users', userAdminRoutes);
 app.use("/api/admin", adminUsersRouter);
+app.use('/api/admin', adminStatsRoutes); // par ex pour stats
 
-// ADD THIS to serve raw swagger JSON for tools like Postman
+// Serve raw swagger json for tools like Postman
 app.get("/api-docs/swagger.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
 
-/** ✅ PUBLIC ROUTES **/
-app.use("/api/auth", authRouter); // <-- only this one is public
-
-/** ⛔️ PROTECTED ROUTES (everything below this needs login) **/
-app.use(isAuthenticated); // <-- middleware that checks JWT
-
+/** Protected routes (require auth) */
+app.use(isAuthenticated);
 
 app.use("/api/cars", hasPermission("MANAGE_USERS"), carRouter);
 app.use("/api/carBrand", hasPermission("MANAGE_CAR_BRANDS"), carBrandRoutes);
@@ -72,15 +69,13 @@ app.use("/api/shop", hasPermission("MANAGE_SHOPS"), shopRoutes);
 app.use("/api/roles", hasPermission("MANAGE_ROLES"), roleRoutes);
 
 
-
-
+// Database sync and start server
 db.sequelize.sync({ alter: true, logging: console.log })
   .then(async () => {
     const Role = db.Role;
     const Permission = db.Permission;
-    const PERMISSIONS = require('./config/permissions');
 
-    /** 🟢 Étape 1 – Créer les permissions si elles n’existent pas **/
+    // Create permissions if missing
     const permissionsToCreate = Object.entries(PERMISSIONS)
       .filter(([key]) => key !== 'ALL')
       .map(([key, code]) => ({
@@ -91,15 +86,15 @@ db.sequelize.sync({ alter: true, logging: console.log })
     await Permission.bulkCreate(permissionsToCreate, { ignoreDuplicates: true });
     const allPermissions = await Permission.findAll();
 
-    /** 🟢 Étape 2 – Créer les rôles **/
-    const [superAdmin, created1] = await Role.findOrCreate({ where: { name: 'superAdmin' } });
-    const [admin, created2] = await Role.findOrCreate({ where: { name: 'admin' } });
-    const [shopAdmin, created3] = await Role.findOrCreate({ where: { name: 'shopAdmin' } });
+    // Create roles
+    const [superAdmin] = await Role.findOrCreate({ where: { name: 'superAdmin' } });
+    const [admin] = await Role.findOrCreate({ where: { name: 'admin' } });
+    const [shopAdmin] = await Role.findOrCreate({ where: { name: 'shopAdmin' } });
 
     const getByCodes = (...codes) => allPermissions.filter(p => codes.includes(p.code));
 
-    /** 🟢 Étape 3 – Associer les permissions **/
-    await superAdmin.setPermissions(allPermissions); // ALL
+    // Associate permissions to roles
+    await superAdmin.setPermissions(allPermissions); // ALL permissions
     await admin.setPermissions(getByCodes(
       PERMISSIONS.MANAGE_USERS,
       PERMISSIONS.MANAGE_ORDERS,
@@ -117,5 +112,3 @@ db.sequelize.sync({ alter: true, logging: console.log })
       console.log("🚀 Server is running on port 3000");
     });
   });
-
-
