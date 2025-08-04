@@ -23,6 +23,7 @@ const orderRoutes = require("./routers/orderRoutes");
 const partCategoryRoutes = require("./routers/partCategoryRoutes");
 const roleRoutes = require("./routers/roleRoutes");
 const shopRoutes = require("./routers/shopRoutes");
+const vinRoutes = require('./routers/vinRoutes');
 
 const roleAdminRoutes = require("./routers/admin/roleRoutes");
 const permissionAdminRoutes = require("./routers/admin/permissionRoutes");
@@ -67,6 +68,7 @@ app.use("/api/orders", hasPermission("MANAGE_ORDERS"), orderRoutes);
 app.use("/api/partCategory", hasPermission("MANAGE_PART_CATEGORIES"), partCategoryRoutes);
 app.use("/api/shop", hasPermission("MANAGE_SHOPS"), shopRoutes);
 app.use("/api/roles", hasPermission("MANAGE_ROLES"), roleRoutes);
+app.use("/api/vin", vinRoutes);
 
 
 // Database sync and start server
