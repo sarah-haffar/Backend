@@ -32,7 +32,8 @@ const options = {
       },
     ],
   },
-  apis: ["./routers/*.js"], // chemins vers tes fichiers avec annotations swagger
+  apis: ["./routers/*.js", "./routers/**/*.js"],
+   // chemins vers tes fichiers avec annotations swagger
 };
 
 const swaggerSpec = swaggerJSDoc(options);

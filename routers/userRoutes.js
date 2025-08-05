@@ -139,40 +139,7 @@ router.put('/:id', controller.updateUser);
  */
 router.delete('/:id', controller.deleteUser);
 
-/**
- * @swagger
- * /api/admin/users/{userId}/role:
- *   put:
- *     summary: Assigner un rôle à un utilisateur
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID de l'utilisateur
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateUserRoleInput'
- *     responses:
- *       200:
- *         description: Rôle mis à jour
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       403:
- *         description: Accès refusé
- *       404:
- *         description: Utilisateur non trouvé
- */
-router.put('/admin/users/:userId/role', isAuthenticated, isAdmin, controller.updateUserRole);
+
 
 
 module.exports = router;

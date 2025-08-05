@@ -1,108 +1,58 @@
-const db = require('../../models'); 
-
-const { User, Order, Part, CarBrand, CarModel, OrderItem, sequelize } = db;
+const { User, Order, Part, OrderItem, sequelize } = require('../../models');
 const { Op } = require('sequelize');
-/**
- * @swagger
- * /api/admin/stats:
- *   get:
- *     summary: Obtenir les statistiques globales pour l'administrateur
- *     tags:
- *       - AdminStats
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Statistiques récupérées avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 totalUsers:
- *                   type: integer
- *                   example: 100
- *                 totalOrders:
- *                   type: integer
- *                   example: 250
- *                 ordersToday:
- *                   type: integer
- *                   example: 5
- *                 totalProducts:
- *                   type: integer
- *                   example: 150
- *                 topBrands:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                         example: "PEUGEOT"
- *                       modelCount:
- *                         type: integer
- *                         example: 12
- *                 topSellingParts:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       partId:
- *                         type: integer
- *                         example: 3
- *                       quantitySold:
- *                         type: integer
- *                         example: 250
- *       401:
- *         description: Non autorisé - token manquant ou invalide
- *       403:
- *         description: Accès refusé - permissions insuffisantes
- *       500:
- *         description: Erreur interne du serveur
- */
+const { fn, col, literal } = sequelize;
 exports.getStats = async (req, res) => {
   try {
+    // Stats globales
     const [totalUsers, totalOrders, totalProducts] = await Promise.all([
       User.count(),
       Order.count(),
       Part.count()
     ]);
 
+    // Commandes d’aujourd’hui
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const ordersToday = await Order.count({
       where: {
-        createdAt: {
+        created_at: {
           [Op.gte]: today
         }
       }
     });
 
-    const topBrands = await CarBrand.findAll({
-      include: [{
-        model: CarModel,
-        as: 'models',
-        attributes: []
-      }],
+    // Top 5 des pièces les plus vendues
+    const topSellingParts = await OrderItem.findAll({
+      include: [{ model: Part, as: 'part' }],
       attributes: [
-        'name',
-        [sequelize.fn('COUNT', sequelize.col('models.id')), 'modelCount']
+        'part_id',
+        [fn('SUM', col('quantity')), 'quantitySold']
       ],
-      group: ['CarBrand.id'],
-      order: [[sequelize.literal('modelCount'), 'DESC']],
+      group: ['part_id', 'part.id'],
+      order: [[literal('quantitySold'), 'DESC']],
       limit: 5
     });
 
-    const topSellingParts = await OrderItem.findAll({
-      include: ['part'], // assure-toi que la relation est bien définie dans tes modèles
+    // Earnings des 4 derniers mois
+    const fourMonthsAgo = new Date();
+    fourMonthsAgo.setDate(1);
+    fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 3);
+
+    const earningsPerMonth = await Order.findAll({
       attributes: [
-        'partId',
-        [sequelize.fn('SUM', sequelize.col('quantity')), 'quantitySold']
+        [sequelize.literal("DATE_FORMAT(created_at, '%Y-%m')"), 'month'],
+        [fn('SUM', col('total_amount')), 'earnings']
       ],
-      group: ['partId'],
-      order: [[sequelize.literal('quantitySold'), 'DESC']],
-      limit: 5
+      where: {
+        created_at: {
+          [Op.gte]: fourMonthsAgo
+        },
+        payment_status: 'paid'
+      },
+      group: [sequelize.literal("DATE_FORMAT(created_at, '%Y-%m')")],
+      order: [[sequelize.literal("DATE_FORMAT(created_at, '%Y-%m')"), 'ASC']],
+      raw: true
     });
 
     res.json({
@@ -110,11 +60,13 @@ exports.getStats = async (req, res) => {
       totalOrders,
       ordersToday,
       totalProducts,
-      topBrands,
-      topSellingParts
+      topSellingParts,
+      earningsPerMonth
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erreur lors de la récupération des statistiques" });
   }
 };
+

@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const db = require("./models");
-require('dotenv').config();
+require('dotenv').config()
+const requireRole = require("./middlewares/requireRole");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
 
@@ -39,14 +40,14 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Public routes
 app.use("/api/auth", authRouter);
-app.use('/api', searchRoute);
+app.use("/api", searchRoute);
 
 // Admin routes
-app.use("/api/admin/roles", roleAdminRoutes);
-app.use("/api/admin/permissions", permissionAdminRoutes);
-app.use('/api/admin/users', userAdminRoutes);
-app.use("/api/admin", adminUsersRouter);
-app.use('/api/admin', adminStatsRoutes); // par ex pour stats
+app.use("/api/admin/roles",requireRole("superAdmin"), roleAdminRoutes);
+app.use("/api/admin/permissions",requireRole("superAdmin"), permissionAdminRoutes);
+app.use("/api/admin/users", requireRole("superAdmin"),userAdminRoutes);
+app.use("/api/admin", requireRole("superAdmin"),adminUsersRouter);
+app.use("/api/admin",requireRole("shopAdmin"), adminStatsRoutes); // par ex pour stats
 
 // Serve raw swagger json for tools like Postman
 app.get("/api-docs/swagger.json", (req, res) => {
@@ -69,6 +70,7 @@ app.use("/api/partCategory", hasPermission("MANAGE_PART_CATEGORIES"), partCatego
 app.use("/api/shop", hasPermission("MANAGE_SHOPS"), shopRoutes);
 app.use("/api/roles", hasPermission("MANAGE_ROLES"), roleRoutes);
 app.use("/api/vin", vinRoutes);
+
 
 
 // Database sync and start server
@@ -98,14 +100,21 @@ db.sequelize.sync({ alter: true, logging: console.log })
     // Associate permissions to roles
     await superAdmin.setPermissions(allPermissions); // ALL permissions
     await admin.setPermissions(getByCodes(
-      PERMISSIONS.MANAGE_USERS,
-      PERMISSIONS.MANAGE_ORDERS,
-      PERMISSIONS.MANAGE_PARTS
+      PERMISSIONS.VIEW_SHOP,
+      PERMISSIONS.MANAGE_CAR_BRANDS,
+      PERMISSIONS.MANAGE_CAR_MODELS,
+      PERMISSIONS.MANAGE_ENGINES,
+      PERMISSIONS.ACCESS_CART
     ));
     await shopAdmin.setPermissions(getByCodes(
       PERMISSIONS.VIEW_SHOP,
-      PERMISSIONS.MANAGE_PRODUCTS,
-      PERMISSIONS.VIEW_ORDERS
+      PERMISSIONS.MANAGE_PARTS,
+      PERMISSIONS.VIEW_ORDERS,
+      PERMISSIONS.MANAGE_ORDERS,
+      PERMISSIONS.VIEW_STATS
+
+
+
     ));
 
     console.log("✅ Permissions et rôles initialisés.");

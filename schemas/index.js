@@ -52,7 +52,7 @@ const UpdateRolePermissionsInput = {
     }
   }
 };
-
+  
 const Stats = {
   type: "object",
   properties: {
@@ -76,32 +76,13 @@ const Stats = {
       example: 789,
       description: "Nombre total de produits (pièces)"
     },
-    topBrands: {
-      type: "array",
-      description: "Liste des marques avec le plus de modèles",
-      items: {
-        type: "object",
-        properties: {
-          name: {
-            type: "string",
-            example: "PEUGEOT",
-            description: "Nom de la marque"
-          },
-          modelCount: {
-            type: "integer",
-            example: 12,
-            description: "Nombre de modèles associés à la marque"
-          }
-        }
-      }
-    },
     topSellingParts: {
       type: "array",
       description: "Liste des pièces les plus vendues",
       items: {
         type: "object",
         properties: {
-          partId: {
+          part_id: {
             type: "integer",
             example: 101,
             description: "ID de la pièce"
@@ -110,12 +91,42 @@ const Stats = {
             type: "integer",
             example: 500,
             description: "Quantité vendue"
+          },
+          part: {
+            type: "object",
+            description: "Informations détaillées sur la pièce",
+            properties: {
+              id: { type: "integer", example: 101 },
+              name: { type: "string", example: "Plaquette de frein" },
+              brand: { type: "string", example: "Brembo" }
+            }
+          }
+        }
+      }
+    },
+    earningsPerMonth: {
+      type: "array",
+      description: "Revenus des 4 derniers mois",
+      items: {
+        type: "object",
+        properties: {
+          month: {
+            type: "string",
+            example: "2025-07",
+            description: "Mois au format YYYY-MM"
+          },
+          earnings: {
+            type: "number",
+            format: "float",
+            example: 1243.50,
+            description: "Montant des revenus"
           }
         }
       }
     }
   }
 };
+
 
 
  
