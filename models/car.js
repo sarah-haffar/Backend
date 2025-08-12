@@ -17,15 +17,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    engineId: {  // 👈 New foreign key to Engine
+    engineId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'engines',
+        model: 'engines', // ✅ Table name for Engine model
         key: 'id'
       }
     }
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Car.associate = (models) => {
     Car.belongsTo(models.User, {
-      foreignKey: 'userId',
+      foreignKey: 'user_id',
       as: 'owner'
     });
 

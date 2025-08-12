@@ -50,20 +50,20 @@ class AuthService {
   }
 
   // Update user last login
-  async updateLastLogin(userId) {
+  async updateLastLogin(user_id) {
     await User.update(
       { last_login: new Date() },
-      { where: { id: userId } }
+      { where: { id: user_id } }
     );
   }
 
   // Update user role
-  async updateUserRole(userId, roleId) {
+  async updateUserRole(user_id, roleId) {
     await User.update(
       { role_id: roleId },
-      { where: { id: userId } }
+      { where: { id: user_id } }
     );
-    return await this.findUserById(userId);
+    return await this.findUserById(user_id);
   }
 
   // Verify Firebase token

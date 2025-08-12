@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const carController = require('../controllers/carController');
 const isAuthenticated = require('../middlewares/isAuthenticated');
-const isAdmin = require('../middlewares/isAdmin');  
 
 /**
  * @swagger
@@ -14,7 +13,7 @@ const isAdmin = require('../middlewares/isAdmin');
  *         - make
  *         - model
  *         - year
- *         - userId
+ *         - user_id
  *         - engineId
  *       properties:
  *         id:
@@ -29,7 +28,7 @@ const isAdmin = require('../middlewares/isAdmin');
  *         year:
  *           type: integer
  *           description: Manufacturing year
- *         userId:
+ *         user_id:
  *           type: integer
  *           description: ID of the owner user
  *         engineId:
@@ -40,7 +39,7 @@ const isAdmin = require('../middlewares/isAdmin');
  *         make: "Toyota"
  *         model: "Corolla"
  *         year: 2020
- *         userId: 5
+ *         user_id: 5
  *         engineId: 3
  *     
  *     CompatiblePart:
@@ -177,60 +176,19 @@ const isAdmin = require('../middlewares/isAdmin');
  *     description: API for car parts compatibility and recommendations
  */
 
-// Routes CRUD basiques pour les voitures
+// ================================================================
+// ROUTES SPÉCIFIQUES (à placer AVANT les routes génériques)
+// ================================================================
 
 /**
  * @swagger
- * /api/cars:
- *   get:
- *     summary: Get all cars
- *     tags: [Cars]
- *     responses:
- *       200:
- *         description: List of all cars
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Car'
- */
-router.get('/', carController.getAllCars);
-
-/**
- * @swagger
- * /api/cars/{id}:
- *   get:
- *     summary: Get a car by ID
- *     tags: [Cars]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID of the car to retrieve
- *     responses:
- *       200:
- *         description: Car details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Car'
- *       404:
- *         description: Car not found
- */
-router.get('/:id', carController.getCarById);
-
-/**
- * @swagger
- * /api/cars/user/{userId}:
+ * /api/cars/user/{user_id}:
  *   get:
  *     summary: Get all cars for a specific user
  *     tags: [Cars]
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: user_id
  *         schema:
  *           type: integer
  *         required: true
@@ -247,129 +205,13 @@ router.get('/:id', carController.getCarById);
  *       404:
  *         description: User not found
  */
-router.get('/user/:userId', carController.getCarsByUserId);
-
-/**
- * @swagger
- * /api/cars:
- *   post:
- *     summary: Create a new car
- *     tags: [Cars]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - make
- *               - model
- *               - year
- *               - userId
- *               - engineId
- *             properties:
- *               make:
- *                 type: string
- *               model:
- *                 type: string
- *               year:
- *                 type: integer
- *               userId:
- *                 type: integer
- *               engineId:
- *                 type: integer
- *             example:
- *               make: "Honda"
- *               model: "Civic"
- *               year: 2019
- *               userId: 2
- *               engineId: 1
- *     responses:
- *       201:
- *         description: Car created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Car'
- *       400:
- *         description: Invalid input
- */
-router.post('/', carController.createCar);
-
-/**
- * @swagger
- * /api/cars/{id}:
- *   put:
- *     summary: Update a car
- *     tags: [Cars]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: Car ID to update
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               make:
- *                 type: string
- *               model:
- *                 type: string
- *               year:
- *                 type: integer
- *               userId:
- *                 type: integer
- *               engineId:
- *                 type: integer
- *             example:
- *               make: "Ford"
- *               model: "Focus"
- *               year: 2018
- *               userId: 2
- *               engineId: 3
- *     responses:
- *       200:
- *         description: Car updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Car'
- *       404:
- *         description: Car not found
- */
-router.put('/:id', carController.updateCar);
-
-/**
- * @swagger
- * /api/cars/{id}:
- *   delete:
- *     summary: Delete a car
- *     tags: [Cars]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: Car ID to delete
- *     responses:
- *       200:
- *         description: Car deleted successfully
- *       404:
- *         description: Car not found
- */
-router.delete('/:id', carController.deleteCar);
+router.get('/user/:user_id', carController.getCarsByUserId);
 
 // Routes pour la compatibilité des pièces avec les voitures
 
 /**
  * @swagger
- * /api/cars/users/{userId}/cars/compatible-parts:
+ * /api/cars/users/{user_id}/cars/compatible-parts:
  *   get:
  *     summary: Get all compatible parts for user's cars
  *     tags: [Car Compatibility]
@@ -377,7 +219,7 @@ router.delete('/:id', carController.deleteCar);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: user_id
  *         schema:
  *           type: integer
  *         required: true
@@ -396,57 +238,14 @@ router.delete('/:id', carController.deleteCar);
  *       500:
  *         description: Server error
  */
-router.get('/users/:userId/cars/compatible-parts', 
+router.get('/users/:user_id/cars/compatible-parts', 
   isAuthenticated, 
   carController.getCompatiblePartsForUser
 );
 
 /**
  * @swagger
- * /api/cars/{carId}/compatible-parts:
- *   get:
- *     summary: Get compatible parts for a specific car
- *     tags: [Car Compatibility]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: carId
- *         schema:
- *           type: integer
- *         required: true
- *         description: Car ID to get compatible parts
- *     responses:
- *       200:
- *         description: List of compatible parts for the specified car
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 car:
- *                   $ref: '#/components/schemas/Car'
- *                 compatible_parts:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/CompatiblePart'
- *                 total_parts:
- *                   type: integer
- *       404:
- *         description: Car not found
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *       500:
- *         description: Server error
- */
-router.get('/:carId/compatible-parts', 
-  isAuthenticated , 
-  carController.getCompatiblePartsForCar
-);
-
-/**
- * @swagger
- * /api/cars/users/{userId}/cars/shops:
+ * /api/cars/users/{user_id}/cars/shops:
  *   get:
  *     summary: Get all shops that sell parts compatible with user's cars
  *     tags: [Car Compatibility]
@@ -454,7 +253,7 @@ router.get('/:carId/compatible-parts',
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: user_id
  *         schema:
  *           type: integer
  *         required: true
@@ -473,14 +272,14 @@ router.get('/:carId/compatible-parts',
  *       500:
  *         description: Server error
  */
-router.get('/users/:userId/cars/shops', 
-  isAuthenticated , 
+router.get('/users/:user_id/cars/shops', 
+  isAuthenticated, 
   carController.getShopsForUserCars
 );
 
 /**
  * @swagger
- * /api/cars/users/{userId}/cars/recommendations:
+ * /api/cars/users/{user_id}/cars/recommendations:
  *   get:
  *     summary: Get part recommendations for user's cars with pagination
  *     tags: [Car Compatibility]
@@ -488,7 +287,7 @@ router.get('/users/:userId/cars/shops',
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: user_id
  *         schema:
  *           type: integer
  *         required: true
@@ -524,12 +323,12 @@ router.get('/users/:userId/cars/shops',
  *       500:
  *         description: Server error
  */
-router.get('/users/:userId/cars/recommendations', 
-  isAuthenticated , 
+router.get('/users/:user_id/cars/recommendations', 
+  isAuthenticated, 
   carController.getPartRecommendationsForUser
 );
 
-// Routes alternatives pour l'utilisateur connecté (sans spécifier l'userId)
+// Routes alternatives pour l'utilisateur connecté (sans spécifier l'user_id)
 
 /**
  * @swagger
@@ -554,7 +353,7 @@ router.get('/users/:userId/cars/recommendations',
  *         description: Server error
  */
 router.get('/my-cars/compatible-parts', 
-  isAuthenticated , 
+  isAuthenticated, 
   carController.getCompatiblePartsForUser
 );
 
@@ -581,7 +380,7 @@ router.get('/my-cars/compatible-parts',
  *         description: Server error
  */
 router.get('/my-cars/shops', 
-  isAuthenticated , 
+  isAuthenticated, 
   carController.getShopsForUserCars
 );
 
@@ -626,8 +425,214 @@ router.get('/my-cars/shops',
  *         description: Server error
  */
 router.get('/my-cars/recommendations', 
-  isAuthenticated , 
+  isAuthenticated, 
   carController.getPartRecommendationsForUser
 );
+
+/**
+ * @swagger
+ * /api/cars/{carId}/compatible-parts:
+ *   get:
+ *     summary: Get compatible parts for a specific car
+ *     tags: [Car Compatibility]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: carId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Car ID to get compatible parts
+ *     responses:
+ *       200:
+ *         description: List of compatible parts for the specified car
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 car:
+ *                   $ref: '#/components/schemas/Car'
+ *                 compatible_parts:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CompatiblePart'
+ *                 total_parts:
+ *                   type: integer
+ *       404:
+ *         description: Car not found
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       500:
+ *         description: Server error
+ */
+router.get('/:carId/compatible-parts', 
+  isAuthenticated, 
+  carController.getCompatiblePartsForCar
+);
+
+// ================================================================
+// ROUTES CRUD BASIQUES (à placer APRÈS les routes spécifiques)
+// ================================================================
+
+/**
+ * @swagger
+ * /api/cars:
+ *   get:
+ *     summary: Get all cars
+ *     tags: [Cars]
+ *     responses:
+ *       200:
+ *         description: List of all cars
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Car'
+ */
+router.get('/', carController.getAllCars);
+
+/**
+ * @swagger
+ * /api/cars:
+ *   post:
+ *     summary: Create a new car
+ *     tags: [Cars]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - make
+ *               - model
+ *               - year
+ *               - user_id
+ *               - engineId
+ *             properties:
+ *               make:
+ *                 type: string
+ *               model:
+ *                 type: string
+ *               year:
+ *                 type: integer
+ *               user_id:
+ *                 type: integer
+ *               engineId:
+ *                 type: integer
+ *             example:
+ *               make: "Honda"
+ *               model: "Civic"
+ *               year: 2019
+ *               user_id: 2
+ *               engineId: 1
+ *     responses:
+ *       201:
+ *         description: Car created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Car'
+ *       400:
+ *         description: Invalid input
+ */
+router.post('/', carController.createCar);
+
+/**
+ * @swagger
+ * /api/cars/{id}:
+ *   get:
+ *     summary: Get a car by ID
+ *     tags: [Cars]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the car to retrieve
+ *     responses:
+ *       200:
+ *         description: Car details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Car'
+ *       404:
+ *         description: Car not found
+ */
+router.get('/:id', carController.getCarById);
+
+/**
+ * @swagger
+ * /api/cars/{id}:
+ *   put:
+ *     summary: Update a car
+ *     tags: [Cars]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Car ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               make:
+ *                 type: string
+ *               model:
+ *                 type: string
+ *               year:
+ *                 type: integer
+ *               user_id:
+ *                 type: integer
+ *               engineId:
+ *                 type: integer
+ *             example:
+ *               make: "Ford"
+ *               model: "Focus"
+ *               year: 2018
+ *               user_id: 2
+ *               engineId: 3
+ *     responses:
+ *       200:
+ *         description: Car updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Car'
+ *       404:
+ *         description: Car not found
+ */
+router.put('/:id', carController.updateCar);
+
+/**
+ * @swagger
+ * /api/cars/{id}:
+ *   delete:
+ *     summary: Delete a car
+ *     tags: [Cars]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Car ID to delete
+ *     responses:
+ *       200:
+ *         description: Car deleted successfully
+ *       404:
+ *         description: Car not found
+ */
+router.delete('/:id', carController.deleteCar);
 
 module.exports = router;

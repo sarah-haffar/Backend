@@ -38,10 +38,10 @@ router.get('/', controller.getAllCarts);
  *           schema:
  *             type: object
  *             required:
- *               - userId
+ *               - user_id
  *               - items
  *             properties:
- *               userId:
+ *               user_id:
  *                 type: string
  *               items:
  *                 type: array

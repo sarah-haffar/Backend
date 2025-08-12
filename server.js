@@ -11,7 +11,9 @@ const authRouter = require("./routers/auth"); // PUBLIC
 const isAuthenticated = require("./middlewares/isAuthenticated"); // ⛔️ PROTECTOR
 const hasPermission = require("./middlewares/hasPermission");
 const searchRoute = require('./routers/search');
+
 const carRouter = require("./routers/car");
+const car_brands = require("./routers/carBrandRoutes");
 
 const userRouter = require("./routers/userRoutes");
 const carModelRoutes = require("./routers/carModelRoutes");
@@ -45,10 +47,14 @@ app.use("/api/auth", authRouter); // <-- only this one is public
 app.use(isAuthenticated); // <-- middleware that checks JWT
 
 
-app.use("/api/cars", hasPermission("MANAGE_USERS"), carRouter);
+// app.use("/api/cars", hasPermission("MANAGE_USERS"), carRouter);
+
+app.use("/api/cars", carRouter);
 
 app.use("/api/users", hasPermission("MANAGE_USERS"), userRouter);
 app.use("/api/carModel", hasPermission("MANAGE_CAR_MODELS"), carModelRoutes);
+app.use("/api/carBrand", car_brands);
+
 app.use("/api/cart", hasPermission("ACCESS_CART"), cartRoutes);
 app.use("/api/engine", hasPermission("MANAGE_ENGINES"), engineRoutes);
 app.use("/api/orderItem", hasPermission("MANAGE_ORDER_ITEMS"), orderItemRoutes);

@@ -1,10 +1,21 @@
-// config/firebaseConfig.js
 const admin = require('firebase-admin');
 const path = require('path');
-const serviceAccount = require(path.resolve(__dirname, 'firebase-service-account.json'));
+const fs = require('fs');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+const serviceAccountPath = path.resolve(__dirname, 'firebase-service-account.json');
+
+let serviceAccount;
+if (fs.existsSync(serviceAccountPath)) {
+  serviceAccount = require(serviceAccountPath);
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+
+} else {
+  console.warn('⚠️ firebase-service-account.json not found, Firebase admin not initialized.');
+  // Optionnellement, initialiser avec une autre méthode, ou ne rien faire
+  // admin.initializeApp(); // si tu veux une initialisation par défaut
+}
 
 module.exports = admin;
