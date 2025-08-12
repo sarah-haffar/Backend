@@ -91,4 +91,3 @@ module.exports = (sequelize, DataTypes) => {
 
     return Shop;
 };
-// This code defines the Shop model for a Sequelize ORM setup, including its attributes, associations, and configurations.

@@ -17,13 +17,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false
-        }
     }, {
         tableName: 'car_brands',
-        timestamps: false,
+        timestamps: true,
         underscored: true
     });
 

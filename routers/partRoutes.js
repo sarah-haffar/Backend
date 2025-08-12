@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/partController');
+const isAuthenticated = require('../middlewares/isAuthenticated'); // 🔐
 
 /**
  * @swagger
@@ -11,21 +12,34 @@ const controller = require('../controllers/partController');
 
 /**
  * @swagger
- * /api/partCategory:
+ * /api/parts:
  *   get:
- *     summary: Get all parts
+ *     summary: Get all parts (paginated)
  *     tags: [Parts]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Number of items per page
  *     responses:
  *       200:
- *         description: List of parts
+ *         description: List of parts with pagination
  */
 router.get('/', controller.getAllParts);
 
 /**
  * @swagger
- * /api/partCategory:
+ * /api/parts:
  *   post:
  *     summary: Create a new part
  *     tags: [Parts]
@@ -45,18 +59,17 @@ router.get('/', controller.getAllParts);
  *                 type: string
  *               price:
  *                 type: number
- *                 format: float
  *               description:
  *                 type: string
  *     responses:
  *       201:
  *         description: Part created successfully
  */
-router.post('/', controller.createPart);
+router.post('/', isAuthenticated, controller.createPart);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/parts/{id}:
  *   get:
  *     summary: Get part by ID
  *     tags: [Parts]
@@ -66,12 +79,11 @@ router.post('/', controller.createPart);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part ID
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
- *         description: Part object
+ *         description: Part data
  *       404:
  *         description: Part not found
  */
@@ -79,9 +91,9 @@ router.get('/:id', controller.getPartById);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/parts/{id}:
  *   put:
- *     summary: Update a part by ID
+ *     summary: Update a part
  *     tags: [Parts]
  *     security:
  *       - bearerAuth: []
@@ -89,9 +101,8 @@ router.get('/:id', controller.getPartById);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part ID
  *         schema:
- *           type: string
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -103,22 +114,21 @@ router.get('/:id', controller.getPartById);
  *                 type: string
  *               price:
  *                 type: number
- *                 format: float
  *               description:
  *                 type: string
  *     responses:
  *       200:
- *         description: Part updated successfully
+ *         description: Part updated
  *       404:
  *         description: Part not found
  */
-router.put('/:id', controller.updatePart);
+router.put('/:id', isAuthenticated, controller.updatePart);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/parts/{id}:
  *   delete:
- *     summary: Delete a part by ID
+ *     summary: Delete a part
  *     tags: [Parts]
  *     security:
  *       - bearerAuth: []
@@ -126,15 +136,14 @@ router.put('/:id', controller.updatePart);
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part ID
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
- *         description: Part deleted successfully
+ *         description: Part deleted
  *       404:
  *         description: Part not found
  */
-router.delete('/:id', controller.deletePart);
+router.delete('/:id', isAuthenticated, controller.deletePart);
 
 module.exports = router;

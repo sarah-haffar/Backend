@@ -1,4 +1,4 @@
-const { User, Role } = require('../models');
+const { User, Role ,Permission } = require('../models');
 const { Op } = require('sequelize');
 const admin = require('../config/firebaseConfig');
 
@@ -10,10 +10,16 @@ class AuthService {
       include: [{
         model: Role,
         as: 'role',
-        attributes: ['id', 'name', 'permissions']
+        attributes: ['id', 'name'],
+        include: [{
+          model: Permission,
+          as: 'permissions',
+          attributes: ['id', 'code', 'description']
+        }]
       }]
     });
   }
+
 
   // Find user by ID with role
   async findUserById(id) {
@@ -21,10 +27,16 @@ class AuthService {
       include: [{
         model: Role,
         as: 'role',
-        attributes: ['id', 'name', 'permissions']
+        attributes: ['id', 'name'], // ✅ Retire 'permissions' ici
+        include: [{
+          model: Permission,
+          as: 'permissions',         // ✅ On inclut la relation correctement
+          attributes: ['id', 'code', 'description']
+        }]
       }]
     });
   }
+
 
   // Find user by Google ID or email
   async findUserByGoogleIdOrEmail(googleId, email) {
@@ -38,10 +50,16 @@ class AuthService {
       include: [{
         model: Role,
         as: 'role',
-        attributes: ['id', 'name', 'permissions']
+        attributes: ['id', 'name'], // ✅ Retire 'permissions'
+        include: [{
+          model: Permission,
+          as: 'permissions',
+          attributes: ['id', 'code', 'description']
+        }]
       }]
     });
   }
+
 
   // Create new user
   async createUser(userData) {

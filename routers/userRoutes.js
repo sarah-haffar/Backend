@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/userController');
+const isAuthenticated = require('../middlewares/isAuthenticated');
+const isAdmin = require('../middlewares/isAdmin');
 
 /**
  * @swagger
@@ -39,6 +41,10 @@ router.get('/', controller.getAllUsers);
  *               - email
  *               - password
  *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
  *               email:
  *                 type: string
  *                 format: email
@@ -132,5 +138,8 @@ router.put('/:id', controller.updateUser);
  *         description: User not found
  */
 router.delete('/:id', controller.deleteUser);
+
+
+
 
 module.exports = router;

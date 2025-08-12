@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/carBrandController');
+const hasPermission = require('../middlewares/hasPermission');
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ router.get('/:id', controller.getCarBrandById);
  *       201:
  *         description: Car brand created successfully
  */
-router.post('/', controller.createCarBrand);
+router.post('/', hasPermission('MANAGE_CAR_BRANDS'), controller.createCarBrand);
 
 /**
  * @swagger
@@ -110,7 +111,7 @@ router.post('/', controller.createCarBrand);
  *       404:
  *         description: Car brand not found
  */
-router.put('/:id', controller.updateCarBrand);
+router.put('/:id', hasPermission('MANAGE_CAR_BRANDS'), controller.updateCarBrand);
 
 /**
  * @swagger
@@ -133,6 +134,6 @@ router.put('/:id', controller.updateCarBrand);
  *       404:
  *         description: Car brand not found
  */
-router.delete('/:id', controller.deleteCarBrand);
+router.delete('/:id', hasPermission('MANAGE_CAR_BRANDS'), controller.deleteCarBrand);
 
 module.exports = router;

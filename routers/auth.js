@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
+const rateLimit = require("express-rate-limit");
 
 /**
  * @swagger
@@ -8,6 +9,25 @@ const authController = require("../controllers/authController");
  *   name: Auth
  *   description: Authentication and user registration
  */
+
+// ============================
+// RATE LIMITERS (anti-brute-force)
+// ============================
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // max 5 tentatives par IP
+  message: { error: "Trop de tentatives de connexion, réessayez plus tard." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 10,
+  message: { error: "Trop de tentatives d'inscription, réessayez plus tard." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 /**
  * @swagger
@@ -37,7 +57,7 @@ const authController = require("../controllers/authController");
  *       400:
  *         description: Invalid input data
  */
-router.post("/register", authController.register);
+router.post("/register", registerLimiter, authController.register);
 
 /**
  * @swagger
@@ -66,7 +86,7 @@ router.post("/register", authController.register);
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", authController.login);
+router.post("/login", loginLimiter, authController.login);
 
 /**
  * @swagger

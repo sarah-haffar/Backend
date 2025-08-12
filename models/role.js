@@ -8,16 +8,10 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true
-    },
-    permissions: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      defaultValue: []  // ensure default empty array (you already did this)
     },
     is_active: {
       type: DataTypes.BOOLEAN,
@@ -33,6 +27,13 @@ module.exports = (sequelize, DataTypes) => {
     Role.hasMany(models.User, {
       foreignKey: 'role_id',
       as: 'users'
+    });
+
+    Role.belongsToMany(models.Permission, {
+      through: 'role_permissions',
+      foreignKey: 'role_id',
+      otherKey: 'permission_id',
+      as: 'permissions'
     });
   };
 

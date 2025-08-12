@@ -1,5 +1,5 @@
-// docs/swagger.js
 const swaggerJSDoc = require("swagger-jsdoc");
+const schemas = require("./schemas"); // Assure-toi que c'est le bon chemin vers le dossier schemas/index.js
 
 const options = {
   definition: {
@@ -21,9 +21,10 @@ const options = {
           type: "http",
           scheme: "bearer",
           bearerFormat: "JWT",
-          description: "Enter JWT token with **Bearer &lt;token&gt;**",
+          description: "Enter JWT token with **Bearer <token>**",
         },
       },
+      schemas: schemas // <-- ajoute cette ligne pour injecter tes schémas ici !
     },
     security: [
       {
@@ -31,7 +32,8 @@ const options = {
       },
     ],
   },
-  apis: ["./routers/*.js"], // Chemin vers tes fichiers routes avec annotations Swagger
+  apis: ["./routers/*.js", "./routers/**/*.js"],
+   // chemins vers tes fichiers avec annotations swagger
 };
 
 const swaggerSpec = swaggerJSDoc(options);

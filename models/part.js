@@ -98,12 +98,6 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE'
         });
 
-        /**Part.hasMany(models.PartImage, {
-            foreignKey: 'part_id',
-            as: 'images',
-            onDelete: 'CASCADE'
-        });*/
-
         Part.hasMany(models.OrderItem, {
             foreignKey: 'part_id',
             as: 'order_items',
@@ -120,6 +114,22 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'part_id',
             as: 'reviews',
             onDelete: 'CASCADE'
+        });
+
+        // New associations for recommendation system
+        Part.hasMany(models.UserBehavior, {
+            foreignKey: 'part_id',
+            as: 'user_behaviors'
+        });
+
+        Part.hasMany(models.PartSimilarity, {
+            foreignKey: 'part_a_id',
+            as: 'similarities_as_a'
+        });
+
+        Part.hasMany(models.PartSimilarity, {
+            foreignKey: 'part_b_id',
+            as: 'similarities_as_b'
         });
     };
 

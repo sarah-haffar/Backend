@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/carModelController');
+const hasPermission = require('../middlewares/hasPermission');
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ router.get('/', controller.getAllCarModels);
  *       201:
  *         description: Car model created successfully
  */
-router.post('/', controller.createCarModel);
+router.post('/', hasPermission('MANAGE_CAR_MODELS'), controller.createCarModel);
 
 /**
  * @swagger
@@ -110,7 +111,7 @@ router.get('/:id', controller.getCarModelById);
  *       404:
  *         description: Car model not found
  */
-router.put('/:id', controller.updateCarModel);
+router.put('/:id', hasPermission('MANAGE_CAR_MODELS'), controller.updateCarModel);
 
 /**
  * @swagger
@@ -133,6 +134,6 @@ router.put('/:id', controller.updateCarModel);
  *       404:
  *         description: Car model not found
  */
-router.delete('/:id', controller.deleteCarModel);
+router.delete('/:id', hasPermission('MANAGE_CAR_MODELS'), controller.deleteCarModel);
 
 module.exports = router;

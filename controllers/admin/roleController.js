@@ -1,8 +1,8 @@
-const db = require('../models');
+const db = require('../../models');
 const Role = db.Role;
 const Permission = db.Permission;
 
-// Get all roles with associated users and permissions
+// Récupérer tous les rôles avec utilisateurs et permissions
 exports.getAllRoles = async (req, res) => {
   try {
     const roles = await Role.findAll({
@@ -19,7 +19,7 @@ exports.getAllRoles = async (req, res) => {
   }
 };
 
-// Get one role by ID with users and permissions
+// Récupérer un rôle par son ID avec utilisateurs et permissions
 exports.getRoleById = async (req, res) => {
   try {
     const role = await Role.findByPk(req.params.id, {
@@ -36,7 +36,7 @@ exports.getRoleById = async (req, res) => {
   }
 };
 
-// Create a new role with permissions
+// Créer un nouveau rôle avec ses permissions (optionnel)
 exports.createRole = async (req, res) => {
   try {
     const { name, description, permissions, is_active } = req.body;
@@ -49,27 +49,24 @@ exports.createRole = async (req, res) => {
       return res.status(400).json({ message: "Permissions must be an array" });
     }
 
-    // Crée le rôle
     const role = await Role.create({
       name,
       description,
       is_active: is_active !== undefined ? is_active : true
     });
 
-    // Si permissions sont fournies, récupère-les et associe-les
     if (permissions && permissions.length > 0) {
       const foundPermissions = await Permission.findAll({
         where: { code: permissions }
       });
 
       if (foundPermissions.length !== permissions.length) {
-        return res.status(400).json({ message: 'Certaines permissions fournies sont invalides' });
+        return res.status(400).json({ message: 'Some permissions provided are invalid' });
       }
 
       await role.setPermissions(foundPermissions);
     }
 
-    // Récupère le rôle avec ses permissions pour la réponse
     const roleWithPermissions = await Role.findByPk(role.id, {
       include: [{ association: 'permissions' }]
     });
@@ -81,7 +78,7 @@ exports.createRole = async (req, res) => {
   }
 };
 
-// Update an existing role and its permissions
+// Mettre à jour un rôle et ses permissions
 exports.updateRole = async (req, res) => {
   try {
     const { name, description, is_active, permissions } = req.body;
@@ -101,7 +98,7 @@ exports.updateRole = async (req, res) => {
       });
 
       if (foundPermissions.length !== permissions.length) {
-        return res.status(400).json({ message: 'Certaines permissions fournies sont invalides' });
+        return res.status(400).json({ message: 'Some permissions provided are invalid' });
       }
 
       await role.setPermissions(foundPermissions);
@@ -118,7 +115,7 @@ exports.updateRole = async (req, res) => {
   }
 };
 
-// Delete a role
+// Supprimer un rôle
 exports.deleteRole = async (req, res) => {
   try {
     const role = await Role.findByPk(req.params.id);
@@ -132,19 +129,19 @@ exports.deleteRole = async (req, res) => {
   }
 };
 
-// Update only permissions (PUT /api/admin/roles/:roleId/permissions)
+// Mettre à jour uniquement les permissions d’un rôle (route PUT /api/admin/roles/:roleId/permissions)
 exports.updateRolePermissions = async (req, res) => {
   const { roleId } = req.params;
   const { permissions } = req.body;
 
   try {
-    const role = await Role.findByPk(roleId);
-    if (!role) {
-      return res.status(404).json({ error: 'Rôle non trouvé' });
-    }
-
     if (!Array.isArray(permissions)) {
       return res.status(400).json({ error: 'permissions must be an array' });
+    }
+
+    const role = await Role.findByPk(roleId);
+    if (!role) {
+      return res.status(404).json({ error: 'Role not found' });
     }
 
     const foundPermissions = await Permission.findAll({
@@ -152,18 +149,18 @@ exports.updateRolePermissions = async (req, res) => {
     });
 
     if (foundPermissions.length !== permissions.length) {
-      return res.status(400).json({ error: 'Certaines permissions fournies sont invalides' });
+      return res.status(400).json({ error: 'Some permissions provided are invalid' });
     }
 
     await role.setPermissions(foundPermissions);
 
-    const updatedRole = await Role.findByPk(role.id, {
+    const updatedRole = await Role.findByPk(roleId, {
       include: [{ association: 'permissions' }]
     });
 
     return res.status(200).json(updatedRole);
   } catch (error) {
     console.error("Erreur updateRolePermissions:", error);
-    return res.status(500).json({ error: "Erreur lors de la mise à jour des permissions" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

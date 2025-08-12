@@ -5,30 +5,30 @@ const controller = require('../controllers/partCategoryController');
 /**
  * @swagger
  * tags:
- *   name: PartCategories
- *   description: Part category management and operations
+ *   name: Part Categories
+ *   description: Part category operations
  */
 
 /**
  * @swagger
- * /api/partCategory:
+ * /api/part-categories:
  *   get:
  *     summary: Get all part categories
- *     tags: [PartCategories]
+ *     tags: [Part Categories]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of part categories
+ *         description: List of categories
  */
 router.get('/', controller.getAllCategories);
 
 /**
  * @swagger
- * /api/partCategory:
+ * /api/part-categories:
  *   post:
  *     summary: Create a new part category
- *     tags: [PartCategories]
+ *     tags: [Part Categories]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -42,50 +42,48 @@ router.get('/', controller.getAllCategories);
  *             properties:
  *               name:
  *                 type: string
- *               description:
+ *               parent_id:
  *                 type: string
  *     responses:
  *       201:
- *         description: Part category created successfully
+ *         description: Category created
  */
 router.post('/', controller.createCategory);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/part-categories/{id}:
  *   get:
- *     summary: Get part category by ID
- *     tags: [PartCategories]
+ *     summary: Get category by ID
+ *     tags: [Part Categories]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part category ID
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Part category object
+ *         description: Category data
  *       404:
- *         description: Part category not found
+ *         description: Not found
  */
 router.get('/:id', controller.getCategoryById);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/part-categories/{id}:
  *   put:
- *     summary: Update a part category by ID
- *     tags: [PartCategories]
+ *     summary: Update a category
+ *     tags: [Part Categories]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part category ID
  *         schema:
  *           type: string
  *     requestBody:
@@ -97,36 +95,35 @@ router.get('/:id', controller.getCategoryById);
  *             properties:
  *               name:
  *                 type: string
- *               description:
+ *               parent_id:
  *                 type: string
  *     responses:
  *       200:
- *         description: Part category updated successfully
+ *         description: Category updated
  *       404:
- *         description: Part category not found
+ *         description: Not found
  */
 router.put('/:id', controller.updateCategory);
 
 /**
  * @swagger
- * /api/partCategory/{id}:
+ * /api/part-categories/{id}:
  *   delete:
- *     summary: Delete a part category by ID
- *     tags: [PartCategories]
+ *     summary: Delete a category
+ *     tags: [Part Categories]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Part category ID
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Part category deleted successfully
+ *         description: Category deleted
  *       404:
- *         description: Part category not found
+ *         description: Not found
  */
 router.delete('/:id', controller.deleteCategory);
 

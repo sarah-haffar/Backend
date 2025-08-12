@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/engineController');
+const hasPermission = require('../middlewares/hasPermission');
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ router.get('/', controller.getAllEngines);
  *       201:
  *         description: Engine created successfully
  */
-router.post('/', controller.createEngine);
+router.post('/', hasPermission('MANAGE_ENGINES'), controller.createEngine);
 
 /**
  * @swagger
@@ -110,7 +111,7 @@ router.get('/:id', controller.getEngineById);
  *       404:
  *         description: Engine not found
  */
-router.put('/:id', controller.updateEngine);
+router.put('/:id', hasPermission('MANAGE_ENGINES'), controller.updateEngine);
 
 /**
  * @swagger
@@ -133,6 +134,6 @@ router.put('/:id', controller.updateEngine);
  *       404:
  *         description: Engine not found
  */
-router.delete('/:id', controller.deleteEngine);
+router.delete('/:id', hasPermission('MANAGE_ENGINES'), controller.deleteEngine);
 
 module.exports = router;

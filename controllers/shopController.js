@@ -81,11 +81,12 @@ exports.register = async (req, res) => {
     const userWithRole = await AuthService.findUserById(newUser.id, { includeRole: true });
 
     const payload = {
-      id: userWithRole.id,
-      first_name: userWithRole.first_name,
-      email: userWithRole.email,
-      role: userWithRole.role ? userWithRole.role.name : null
+      id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      role_id: user.role_id
     };
+
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "40s" });
 
