@@ -11,6 +11,54 @@ const controller = require('../controllers/partCategoryController');
 
 /**
  * @swagger
+ * /api/part-categories/demo/three:
+ *   get:
+ *     summary: Get 3 categories with empty children
+ *     tags: [Part Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 3 categories with empty children array
+ */
+router.get('/demo/three', controller.getThreeCategories);
+
+/**
+ * @swagger
+ * /api/part-categories/ml-categories:
+ *   get:
+ *     summary: Get ML-selected categories with 10 products each
+ *     tags: [Part Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Categories selected by ML with 10 products in children
+ */
+router.get('/ml-categories', controller.getMLCategories);
+
+/**
+ * @swagger
+ * /api/part-categories/{id}/remaining:
+ *   get:
+ *     summary: Get remaining products of a ML category
+ *     tags: [Part Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Remaining products of the category
+ */
+router.get('/:id/remaining', controller.getRemainingProducts);
+
+/**
+ * @swagger
  * /api/part-categories:
  *   get:
  *     summary: Get all part categories
@@ -22,6 +70,28 @@ const controller = require('../controllers/partCategoryController');
  *         description: List of categories
  */
 router.get('/', controller.getAllCategories);
+
+/**
+ * @swagger
+ * /api/part-categories/{id}:
+ *   get:
+ *     summary: Get category by ID
+ *     tags: [Part Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Category data
+ *       404:
+ *         description: Not found
+ */
+router.get('/:id', controller.getCategoryById);
 
 /**
  * @swagger
@@ -49,28 +119,6 @@ router.get('/', controller.getAllCategories);
  *         description: Category created
  */
 router.post('/', controller.createCategory);
-
-/**
- * @swagger
- * /api/part-categories/{id}:
- *   get:
- *     summary: Get category by ID
- *     tags: [Part Categories]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Category data
- *       404:
- *         description: Not found
- */
-router.get('/:id', controller.getCategoryById);
 
 /**
  * @swagger
